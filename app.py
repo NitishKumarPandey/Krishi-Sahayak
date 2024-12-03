@@ -146,8 +146,7 @@ def signup():
             connection.close()
     
     return render_template('signup.html', msg=msg)# complete route
-@app.route('/complete', methods =['GET', 'POST'])
-@app.route('/complete', methods=['GET', 'POST'])
+
 @app.route('/complete', methods=['GET', 'POST'])
 def complete():
     msg = "Please first create user!!!"
