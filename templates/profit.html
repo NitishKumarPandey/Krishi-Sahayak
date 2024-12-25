@@ -1,30 +1,46 @@
-{% extends "layout.html" %}
-
-{% block body %}
-                <thead class="thead-light">
-                    <tr>
-						<th rowspan="2">Selling Price</th>
-						<th colspan="4">Expenditure</th>
-					</tr>
-                    <tr>
-                        <th>Seed</th>
-                        <th>Pesticides</th>
-                        <th>Fertilizers</th>
-                        <th>Labours</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="2">{{ sp }}</td>
-                        {% for val in values %}
-                            <td>{{ val }}</td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        <td colspan="4">Total expenditures = {{ total_exp }}</td> 
-                    </tr>
-                    <tr>
-                        <td colspan="5" class="bg-{{color}} text-white">Profit = {{ sp - total_exp }}</td>
-                    </tr>
-                </tbody>
+{% extends "layout.html" %} {% block body %}
+<!-- Profit and Expenditure -->
+<div class="d-flex justify-content-center" style="margin: 0 auto; gap: 10px;">
+    <div class="card p-3 mb-3" style="background-color: #e0f2f1; min-width: 368px; height: 156px;">
+        <div class="mb-3">
+            <h5 class="" style="font-weight: bold;
+         color: #2e7d32;">Current Total Profit</h5>
+            <h6 class="">बर्तमान कुल लाव</h6>
+        </div>
+        <p style="font-size: xx-large; font-weight: bold; color: #2e7d32;" class="">
+            ₹{{ sp - total_exp | default(0) }}
+        </p>
+    </div>
+    <div class="card p-3" style="background-color: #ffebee; min-width: 368px; height: 156px;">
+        <div class="mb-3">
+            <h5 class="" style="font-weight: bold;
+         color: #2e7d32;">Current Total Expenditure</h5>
+            <h6 class="">बर्तमान कुल खर्च</h6>
+        </div>
+        <p class="" style="font-size: xx-large; font-weight: bold; color: #d32f2f;">
+            ₹{{ total_exp | default(0) }}
+        </p>
+    </div>
+</div>
+  
+<thead class="thead-light">
+  <tr>
+    <th  style="background-color: #e3dcc9;" rowspan="2">Selling Price</th>
+    <th  style="background-color: #e3dcc9;" colspan="4">Expenditure</th>
+  </tr>
+  <tr>
+    <th  style="background-color: #e3dcc9;">Seed</th>
+    <th  style="background-color: #e3dcc9;">Pesticides</th>
+    <th  style="background-color: #e3dcc9;">Fertilizers</th>
+    <th  style="background-color: #e3dcc9;">Labours</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td rowspan="2">{{ sp }}</td>
+    {% for val in values %}
+    <td>{{ val }}</td>
+    {% endfor %}
+  </tr>
+</tbody>
 {% endblock %}

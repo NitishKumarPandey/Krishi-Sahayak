@@ -1,36 +1,53 @@
 {% extends "layout.html" %}
 
 {% block body %}
-                <thead class="thead-light">
-                  <tr>
-                    <th>Crop Id</th>
-                    <th>Crop Name</th>
-                    <th>Crop Quantity</th>
-                    <th colspan="2">Actions</th>
-                    <form action="{{ url_for('add') }}" method="post">
-                        <th>
-                            <button type="submit" class="addbtn btn-sm" name="crop_id" value="crop_allocation">Add</button>
-                        </th>
-                    </form>
+<div class="container mt-5 d-flex justify-content-center align-items-center">
+    {% if msg %}
+        <!-- Layout for No Data -->
+        <div class="text-center p-5" style="width: 600px;">
+            <img src="../static/Frame 2147223727.png" alt="No Data" style="width: 100%; height: auto;" class="mb-3">
+            <h4>You haven't stored any crop data yet.</h4>
+            <p>Add your data now and efficiently track your farm management.</p>
+            <form action="{{ url_for('add') }}" method="post">
+                <button type="submit" class="btn btn-success" name="crop_id" value="crop_allocation">+ Create</button>
+            </form>
+        </div>
+    {% else %}
+        <!-- Layout for Data Table -->
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
+                <tr>
+                    <th style="background-color: #e3dcc9;">Crop Id</th>
+                    <th style="background-color: #e3dcc9;">Crop Name</th>
+                    <th style="background-color: #e3dcc9;">Area allocated</th>   
+                    <th style="background-color: #e3dcc9;">Actions</th>
                 </tr>
-                </thead>
-                <tbody>
-                    {% for record in info %}
-                    <tr>
-                        {% for value in record.values() %}
-                        <td>{{ value }}</td>
-                        {% endfor %}
-                        <form action="{{ url_for('update') }}" method="post">
-                            <td>
-                                <button type="submit" class="udtbtn btn-sm" value = '{{ record.crop_id }}' name="crop_id+crop_allocation" >Update</button>
-                            </td>
+            </thead>
+            <tbody>
+                {% for record in info %}
+                <tr style="background-color: white;">
+                    <td>{{ record.id }}</td> <!-- Display Crop Id -->
+                    <td>{{ record.Crop_name }}</td> <!-- Display Crop Name -->
+                    <td>{{ record.Area_allocated }}</td> <!-- Display Area Allocated -->
+                    <td>
+                        <!-- Update Button -->
+                        <form action="{{ url_for('update') }}" method="post" class="d-inline">
+                            <button type="submit" class="udtbtn btn-sm" value="{{ record.id }}" name="id+crop_allocation">Update</button>
                         </form>
-                        <form action="{{ url_for('delete') }}" method="post">
-                            <td>
-                                <button type="submit" class="dltbtn btn-sm" value = '{{ record.crop_id }}' name="crop_id+crop_allocation" >Delete</button>
-                            </td>
+                        <!-- Delete Button -->
+                        <form action="{{ url_for('delete') }}" method="post" class="d-inline">
+                            <button type="submit" class="dltbtn btn-sm" value="{{ record.id }}" name="id+crop_allocation">Delete</button>
                         </form>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form action="{{ url_for('add') }}" method="post" class="d-flex justify-content-center align-items-center" style="margin-top: 10px;
+        ;">
+                            <button type="submit" class="btn" style="background-color: #266040" name="crop_id" value="crop_allocation">+ Add</button>
+        </form>
+        
+    {% endif %}
+</div>
 {% endblock %}

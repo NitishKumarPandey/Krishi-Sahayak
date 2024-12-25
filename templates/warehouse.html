@@ -1,36 +1,57 @@
 {% extends "layout.html" %}
 
 {% block body %}
-                <thead class="thead-light">
-                    <tr>
-                        <th>Warehouse Id</th>
-                        <th>Crop Stored</th>
-                        <th>Total Capacity</th>
-                        <th colspan="2">Actions</th>
-                        <form action="{{ url_for('add') }}" method="post">
-                            <th>
-                                <button type="submit" class="addbtn btn-sm" name="warehouse_id" value="warehouse">Add</button>
-                            </th>
-                        </form>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in info %}
-                    <tr>
-                        {% for value in record.values() %}
-                        <td>{{ value }}</td>
-                        {% endfor %}
+<div class="container mt-5 d-flex justify-content-center align-items-center">
+    {% if msg %}
+        <!-- Layout for No Data -->
+        <div class="text-center p-5" style="width: 600px;">
+            <img src="{{ url_for('static', filename='Frame 2147223727.png') }}" 
+                 alt="No Data" style="width: 100%; height: auto;" class="mb-3">
+            <h4>You haven't stored any warehouse data yet.</h4>
+            <p>{{ msg }}</p>
+            <form action="{{ url_for('add') }}" method="post">
+                <button type="submit" class="btn btn-success" name="warehouse_id" value="warehouse">+ Create</button>
+            </form>
+        </div>
+    {% else %}
+        <!-- Layout for Data Table -->
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
+                <tr>
+                    <th style="background-color: #e3dcc9;">Warehouse Id</th>
+                    <th style="background-color: #e3dcc9;">Location</th>
+                    <th style="background-color: #e3dcc9;">Total Capacity</th>
+                    <th style="background-color: #e3dcc9;" >Actions</th>
+                    <!-- <form action="{{ url_for('add') }}" method="post">
+                        <th>
+                            <button type="submit" class="addbtn btn-sm" name="warehouse_id" value="warehouse">Add</button>
+                        </th>
+                    </form> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in info %}
+                <tr style="background-color: white;">
+                    <td>{{record.id}}</td>
+                    <td>{{record.Location}}</td>
+                    <td>{{record.Capacity}}</td>
+                    <!-- <td>{{record.Salary}}</td> -->
+                    <td class = "d-flex " style="gap: 4px;">
                         <form action="{{ url_for('update') }}" method="post">
-                            <td>
-                                <button type="submit" class="udtbtn btn-sm" value = '{{ record.warehouse_id }}' name="warehouse_id+warehouse" >Update</button>
-                            </td>
+                                <button type="submit" class="udtbtn btn-sm" value = '{{ record.id }}' name="id+warehouse" >Update</button>
                         </form>
                         <form action="{{ url_for('delete') }}" method="post">
-                            <td>
-                                <button type="submit" class="dltbtn btn-sm" value = '{{ record.warehouse_id }}' name="warehouse_id+warehouse" >Delete</button>
-                            </td>
+                                <button type="submit" class="dltbtn btn-sm" value = '{{ record.id }}' name="id+warehouse" >Delete</button>
                         </form>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form action="{{ url_for('add') }}" method="post" class="d-flex justify-content-center align-items-center" style="margin-top: 10px;
+        ;">
+                            <button type="submit" class="btn" style="background-color: #266040" name="warehouse_id" value="warehouse">+ Add</button>
+        </form>
+    {% endif %}
+</div>
 {% endblock %}

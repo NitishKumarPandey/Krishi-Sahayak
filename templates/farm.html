@@ -1,39 +1,60 @@
 {% extends "layout.html" %}
 
 {% block body %}
-
-    <thead class="thead-light">
-        <tr>
-            <th>Farm Id</th>
-            <th>Farm Acre</th>
-            <th>Farm Location</th>
-            <th>Irrigation Source</th>
-            <th colspan="2">Actions</th>
+<div class="container mt-5 d-flex justify-content-center align-items-center">
+    {% if msg %}
+        <!-- Layout for No Data -->
+        <div class="text-center p-5" style="width: 600px;">
+            <img src="{{ url_for('static', filename='Frame 2147223727.png') }}" 
+                 alt="No Data" style="width: 100%; height: auto;" class="mb-3">
+            <h4>You haven't stored any crop data yet.</h4>
+            <p>{{ msg }}</p>
             <form action="{{ url_for('add') }}" method="post">
-                <th>
-                    <button type="submit" class="addbtn btn-sm" name="farm_id" value="farm">Add</button>
-                </th>
+                <button type="submit" class="btn btn-success" name="farm_id" value="farm">+ Create</button>
             </form>
-        </tr>
-    </thead>
-    <tbody>                
-        {% for record in info %}
-        <tr>
-            {% for value in record.values() %}
-                <td>{{ value }}</td>
-            {% endfor %}
-            <form action="{{ url_for('update') }}" method="post">
-                <td>
-                    <button type="submit" class="udtbtn btn-sm" value = '{{ record.farm_id }}' name="farm_id+farm">Update</button>
-                </td>
-            </form>
-            <form action="{{ url_for('delete') }}" method="post">
-                <td>
-                    <button type="submit" class="dltbtn btn-sm" value = '{{ record.farm_id }}' name="farm_id+farm">Delete</button>
-                </td>
-            </form>
-        </tr>
-        {% endfor %}
-    </tbody>
-
-{% endblock %} 
+        </div>
+    {% else %}
+        <!-- Layout for Data Table -->
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
+                <tr style="background-color: #e3dcc9;">
+                    <th style="background-color: #e3dcc9;">Farm Id</th>
+                    <th style="background-color: #e3dcc9;" >Farm Name</th>
+                    <th style="background-color: #e3dcc9;" >Farm Acre</th>
+                    <th style="background-color: #e3dcc9;" >Farm Location</th>
+                    <th style="background-color: #e3dcc9;" >Actions</th>
+                    <!-- <form action="{{ url_for('add') }}" method="post">
+                        <th>
+                            <button type="submit" class="btn btn-sm btn-success" name="farm_id" value="farm">Add</button>
+                        </th>
+                    </form> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in info %}
+                <tr style="background-color: white;">
+                    <td>{{ record.id }}</td>
+                    <td>{{ record.Farm_name }}</td>
+                    <td>{{ record.Area }}</td>
+                    <td>{{ record.Location }}</td>
+                    <td class = "d-flex " style="gap: 4px;">
+                        <form action="{{ url_for('update') }}" method="post">
+                            <button type="submit" class="udtbtn btn-sm" 
+                                    name="id+farm" value="{{ record.id }}">Update</button>
+                        </form>
+                        <form action="{{ url_for('delete') }}" method="post">
+                            <button type="submit" class="dltbtn btn-sm" 
+                                    name="id+farm" value="{{ record.id }}">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form action="{{ url_for('add') }}" method="post" class="d-flex justify-content-center align-items-center" style="margin-top: 10px;
+        ;">
+                            <button type="submit" class="btn" style="background-color: #266040" name="farm_id" value="farm">+ Add</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

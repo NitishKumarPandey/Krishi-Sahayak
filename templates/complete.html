@@ -1,11 +1,9 @@
-{% include "css.html" %}
+<!-- {% include "css.html" %}
 
 <!DOCTYPE html>
 <html lang="en">
 	
-	{% block css %}
 
-	{% endblock %}
 
 	<body>
 		<div class="container">
@@ -52,4 +50,169 @@
 			</div>
 		</div>
 	</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Krishi Sahayak Login</title>
+
+    <style>
+      /* General styling */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #eaf4f6;
+        background-image: url("../static/grass.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .login-container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        width: 400px;
+        text-align: start;
+        padding: 30px;
+      }
+
+      .login-container h1 {
+        font-size: 28px;
+        color: #064420;
+        margin-bottom: 10px;
+      }
+
+      .login-container p {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-control {
+        width: 95%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #4caf50;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+      }
+
+      .btn-login {
+        background-color: #064420;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .btn-login:hover {
+        background-color: #046307;
+      }
+
+      .signup-link {
+        margin-top: 10px;
+        display: block;
+        font-size: 14px;
+        color: #064420;
+        text-decoration: none;
+      }
+
+      .signup-link:hover {
+        text-decoration: underline;
+      }
+	  .col{
+		margin-bottom: 10px;
+	  }
+	  label{
+		  font-size: small;
+	  }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h4 class="text-center" style="color: red">{{ msg }}</h4>
+      <h1>Complete Your Profile</h1>
+      <form action="{{ url_for('complete') }}" autocomplete="off" method="POST">
+        <div class="col">
+			<label for="first">First Name</label>
+          <input
+            autofocus
+            required
+            name="first"
+            type="text"
+            class="form-control"
+            placeholder="First name"
+          />
+        </div>
+        <div class="col">
+		  <label for="last">Last Name</label>
+          <input
+            required
+            name="last"
+            type="text"
+            class="form-control"
+            placeholder="Last name"
+          />
+        </div>
+        <div class="col w-100">
+		  <label for="gender">Gender</label>
+          <select required name="gender" class="form-control" style="width: 100%;">
+            <option value="" selected disabled>Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="col">
+		  <label for="contact">Contact</label>
+          <input
+            required
+            name="contact"
+            type="number"
+            class="form-control"
+            placeholder="Contact"
+          />
+        </div>
+        <div class="col">
+		  <label for="address">Address</label>
+          <input
+            required
+            name="address"
+            type="text"
+            class="form-control"
+            placeholder="Town, District, State"
+          />
+        </div>
+        <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+          <button type="submit" class="btn button" style="padding: 18px; width: 100%; font-size: medium; font-weight: 500; border-radius: 10px; cursor: pointer; border: 1px solid #064420;">
+            Get Started
+          </button>
+          <br />
+        </div>
+      </form>
+     
+      </div>
+    </div>
+  </body>
 </html>

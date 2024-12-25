@@ -1,50 +1,73 @@
 {% block navbar %}
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<nav class="navbar navbar-expand-lg" >
+    <div class="d-flex align-items-center justify-content-between">
+        <button class="navbar-toggler" style="border: 2px solid #000;" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="nav-link ml-2 d-block d-lg-none" href="{{ url_for('home') }}" style="color: #266040; font-weight: bold; text-decoration: none;">Krishi Sahayak <span class="sr-only">(current)</span></a>
+    </div>
+    
+    
+    <style>
+    /* Make the toggler icon black */
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='black' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+    </style>
+    
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto justify-content-between w-100">
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('home') }}">{{user_id}} <span class="sr-only">(current)</span></a>
+            <li class="nav-item active d-none d-lg-block">
+                <a class="nav-link" href="{{ url_for('home') }}" style="color: #266040; font-weight: bold;">Krishi Sahayak <span class="sr-only">(current)</span></a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if request.path == url_for('home') %}active-link{% endif %}" href="{{ url_for('home') }}" style="color:black; font-size: medium;">Dashboard </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('farm') }}">Farm </a>
+                <a class="nav-link {% if request.path == url_for('farm') %}active-link{% endif %}" href="{{ url_for('farm') }}" style="color:black; font-size: medium;">Farm </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('crop_allocation') }}">Crop Allocation </a>
+                <a class="nav-link {% if request.path == url_for('crop_allocation') %}active-link{% endif %}" href="{{ url_for('crop_allocation') }}" style="color:black; font-size: medium;" >Crop Allocation </a>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown" style="color: #000000;">
+                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: medium;">
                 Maintain
                 </a>
-                <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{{ url_for('seed') }}">Seed </a>
-                    <a class="dropdown-item" href="{{ url_for('pesticide') }}">Pesticides </a>
-                    <a class="dropdown-item" href="{{ url_for('fertilizer') }}">Fertilizers </a>
+                <div class="dropdown-menu bg-light text-drak" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item bg-light text-dark" href="{{ url_for('seed') }}">Seed </a>
+                    <a class="dropdown-item bg-light text-dark" href="{{ url_for('pesticide') }}">Pesticides </a>
+                    <a class="dropdown-item bg-light text-dark" href="{{ url_for('fertilizer') }}">Fertilizers </a>
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('labour') }}">Labours </a>
+                <a class="nav-link {% if request.path == url_for('labour') %}active-link{% endif %}" href="{{ url_for('labour') }}" style="color:black; font-size: medium;">Labours </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('warehouse') }}">Warehouse </a>
+                <a class="nav-link {% if request.path == url_for('warehouse') %}active-link{% endif %}" href="{{ url_for('warehouse') }}" style="color:black; font-size: medium;">Warehouse </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('crop_market') }}">Crop Market </a>
+                <a class="nav-link {% if request.path == url_for('crop_market') %}active-link{% endif %}" href="{{ url_for('crop_market') }}" style="color:black; font-size: medium;">Crop Market </a>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <li class="nav-item dropdown" style="color:black">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:black; font-size: medium;">
                 Profit-Loss
                 </a>
-                <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{{ url_for('profit_loss_overall') }}">Overall </a>
-                    <a class="dropdown-item" href="{{ url_for('cropwise') }}">Cropwise </a>
+                <div class="dropdown-menu bg-light" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item bg-light text-dark" href="{{ url_for('profit_loss_overall') }}">Overall </a>
+                    <a class="dropdown-item bg-light text-dark" href="{{ url_for('cropwise') }}">Cropwise </a>
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('logout') }}">Log out </a>
+                <a class="nav-link bg-white" 
+                    style="color: black; 
+                            font-size: medium; 
+                            border-radius: 10px; 
+                            padding: 5px 30px; 
+                            border: 1px solid #000000;" 
+                    href="{{ url_for('logout') }}">Log out</a>
+
             </li>
         </ul>
     </div>

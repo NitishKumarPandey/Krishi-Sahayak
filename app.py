@@ -61,13 +61,13 @@ def login():
         try:
             with connection.cursor() as cursor:
                 # getting farmer where id and password matches
-                cursor.execute('SELECT * FROM farmer WHERE User_id = %s AND Password = %s', (username, password))
+                cursor.execute('SELECT * FROM farmer WHERE username = %s AND Password = %s', (username, password))
                 account = cursor.fetchone()
 
                 if account:
                     # if account found then log in successful
                     session['loggedin'] = True
-                    session['id'] = account['User_id'] 
+                    session['id'] = account['id'] 
                     msg = 'Logged in successfully!!!'   
                 
                     if account['F_Firstname'] == '' and account['F_Lastname'] == '':
@@ -76,7 +76,7 @@ def login():
                         return render_template("complete.html")
                     
                     # getting farmer info where id and password matches
-                    cursor.execute('SELECT * FROM farmer WHERE User_id = %s', (session['id'],)) 
+                    cursor.execute('SELECT * FROM farmer WHERE id = %s', (session['id'],)) 
                     info = cursor.fetchone()
                     data = {'user_id': session['id'], 'msg': msg, 'info': info}
 
@@ -112,8 +112,9 @@ def signup():
     msg = ''
     if request.method == 'POST':
         # getting new id and new password
-        user_id = request.form['username'] 
+        username = request.form['username'] 
         password = request.form['password']
+        print(username, password)
         
         # Establish database connection
         connection = get_db_connection()
@@ -125,7 +126,7 @@ def signup():
         try:
             with connection.cursor() as cursor:
                 # check if user already exists
-                cursor.execute('SELECT * FROM farmer WHERE User_id = %s', (user_id, )) 
+                cursor.execute('SELECT * FROM farmer WHERE username = %s', (username )) 
                 account = cursor.fetchone() 
                 
                 if account:
@@ -133,7 +134,7 @@ def signup():
                     msg = 'Account already exists!!!'
                 else: 
                     # if user doesn't exist then create new user
-                    cursor.execute('INSERT INTO farmer (F_Firstname, F_Lastname, F_Email, F_Phone, F_Income, User_id, Password) VALUES ("", "", "", "", 0, %s, %s)', (user_id, password)) 
+                    cursor.execute('INSERT INTO farmer (F_Firstname, F_Lastname, F_Email, F_Phone, F_Income, username, Password) VALUES ("", "", "", "", 0, %s, %s)', (username, password)) 
                     connection.commit() 
                     msg = 'You have successfully registered!!!'
                     return render_template('login.html', msg=msg)   
@@ -176,13 +177,13 @@ def complete():
             with connection.cursor() as cursor:
                 # Update user profile
                 cursor.execute(
-                    'UPDATE farmer SET F_Firstname=%s, F_Lastname=%s, F_Gender=%s, F_Address=%s, F_ContactNo=%s WHERE User_id=%s',
+                    'UPDATE farmer SET F_Firstname=%s, F_Lastname=%s, F_Gender=%s, F_Address=%s, F_ContactNo=%s WHERE id=%s',
                     (first, last, gender, address, contact, user_id)
                 )
                 connection.commit()
 
                 # Fetch updated user info
-                cursor.execute('SELECT * FROM farmer WHERE User_id = %s', (user_id,))
+                cursor.execute('SELECT * FROM farmer WHERE id = %s', (user_id,))
                 info = cursor.fetchone()
 
                 msg = "Successfully completed profile!!!"
@@ -202,11 +203,118 @@ def complete():
     return render_template('index.html', **data)
 
 
+def getProfitLoss():
+    msg=''
+
+    total_sp = 0
+    exp1 = 0
+    exp2 = 0
+    exp3 = 0
+
+    # getting selling prices of every crop and all expences and calculating its sum
+    sql1 = "SELECT Selling_price FROM crop_market WHERE User_id = '" +  str(session['id'] ) + "'"
+    connection = get_db_connection()
+    if connection is None:
+        msg = 'Database connection failed'
+        return render_template('login.html', msg=msg)
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute(sql1)
+            total_sp = cursor.fetchall()
+            total_sp = calculate_total(total_sp)
+
+        except Exception as e:
+            print(f"Profit Loss Error: {e}")
+
+    
+    q1 = "SELECT seed_price FROM seed WHERE User_id = '" + str(session['id']) + "'"
+    connection = get_db_connection()
+    if connection is None:
+        msg = 'Database connection failed'
+        return render_template('login.html', msg=msg)
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute(q1)
+            exp1 = cursor.fetchall()
+            exp1 = calculate_total(exp1)
+        except Exception as e:
+            print(f"Profit Loss Error: {e}")
+    
+    q2 = "SELECT pesticide_price FROM pesticide WHERE User_id = '" + str(session['id']) + "'"
+    connection = get_db_connection()
+    if connection is None:
+        msg = 'Database connection failed'
+        return render_template('login.html', msg=msg)
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute(q2)
+            exp2 = cursor.fetchall()
+            exp2 = calculate_total(exp2)
+        except Exception as e:
+            print(f"Profit Loss Error: {e}")
+
+    q3 = "SELECT fertilizer_price FROM fertilizer WHERE User_id = '" + str(session['id']) + "'"
+    connection = get_db_connection()
+    if connection is None:
+        msg = 'Database connection failed'
+        return render_template('login.html', msg=msg)
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute(q3)
+            exp3 = cursor.fetchall()
+            exp3 = calculate_total(exp3)
+        except Exception as e:
+            print(f"Profit Loss Error: {e}")
+
+    q4 = "SELECT salary FROM labour WHERE User_id = '" + str(session['id']) + "'"
+    connection = get_db_connection()
+    if connection is None:
+        msg = 'Database connection failed'
+        return render_template('login.html', msg=msg)
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute(q4)
+            exp4 = cursor.fetchall()
+            exp4 = calculate_total(exp4)
+        except Exception as e:
+            print(f"Profit Loss Error: {e}")
+
+    total_exp = exp1 + exp2 + exp3 + exp4
+    values = [exp1, exp2, exp3, exp4]
+    data = {'user_id': session['id'], 'msg': msg, 'values': values, 'total_exp': total_exp, 'sp': total_sp, 'color': 'primary'}
+
+    if (total_sp - total_exp) > 0:
+        data['color'] = 'success'
+    elif (total_sp - total_exp) < 0:
+        data['color'] = 'danger'
+        
+    return data
+
+
 # from now 9 routes are used for displaying respected data and if no data found then display error
 # 1 - home route - to main user page
 @app.route('/home')
 def home():
+    datas = getProfitLoss()
+    sell = {
+                'profit': datas['sp'] - datas['total_exp'],
+                'expenditure': datas['total_exp'],
+            }
+    data = {'info': sell}
+    # print(data)
+
+    return render_template('index.html', **data)
+        
+
+
+# 2 - farm route - to display farm data
+@app.route('/farm')
+def farm():
     msg = ""
+    if 'id' not in session:
+        msg = "User not logged in!"
+        return render_template('index.html', msg=msg)
+
     connection = get_db_connection()
     if connection is None:
         msg = 'Database connection failed'
@@ -214,39 +322,20 @@ def home():
 
     try:
         with connection.cursor() as cursor:
-            cursor.execute('SELECT * FROM farmer WHERE User_id = %s ', (session['id'],)) 
-            info = cursor.fetchone()
-            data = {'user_id': session['id'], 'msg': msg, 'info': info}
-            return render_template('index.html', **data)
-
-    except Exception as e:
-        print(f"Home Error: {e}")
-        msg = 'An error occurred during home'
-    # return render_template('index.html', msg=msg)
-
-# 2 - farm route - to display farm data
-@app.route('/farm')
-def farm():
-    msg=""
-    connection = get_db_connection()
-    if connection is None:
-        msg = 'Database connection failed'
-        return render_template('index.html', msg=msg)
-    with connection.cursor() as cursor:
-        try:
-            cursor.execute('SELECT * FROM farm WHERE User_id = %s ', (session['id'],))
+            # Fetch farm data for the logged-in user
+            cursor.execute('SELECT * FROM farm WHERE User_id = %s', (session['id'],))
             info = cursor.fetchall()
-            for d in info:
-                _ = d.popitem()
-            if len(info)==0:
-                msg="Sorry, no data found!!!"
+            if not info:
+                msg = "Sorry, no data found!!!"
             data = {'user_id': session['id'], 'msg': msg, 'info': info}
-            return render_template('farm.html', **data)
-
-        except Exception as e:
-            print(f"Farm Error: {e}")   
-            msg = 'An error occurred during farm'
-
+            print(data)
+        return render_template('farm.html', info=info, msg=msg)
+    except Exception as e:
+        print(f"Farm Error: {e}")
+        msg = "An error occurred while fetching farm data."
+        return render_template('farm.html', info=[], msg=msg)
+    finally:
+        connection.close()
 # 3 - crop_allocation route - to display all currently allocated crop data
 @app.route('/crop_allocation')
 def crop_allocation():
@@ -259,11 +348,11 @@ def crop_allocation():
         try:
             cursor.execute('SELECT * FROM crop_allocation WHERE User_id = %s ', (session['id'],))
             info = cursor.fetchall()
-            for d in info:
-                _ = d.popitem()
+            
             if len(info)==0:
                 msg="Sorry, no data found!!!"
             data = {'user_id': session['id'], 'msg': msg, 'info': info}
+            print(data)
             return render_template('crop_allocation.html', **data)
 
         except Exception as e:
@@ -282,8 +371,8 @@ def seed():
         try:
             cursor.execute('SELECT * FROM seed WHERE User_id = %s ', (session['id'],))
             info = cursor.fetchall()
-            for d in info:
-                _ = d.popitem()
+            # for d in info:
+            #     _ = d.popitem()
             if len(info)==0:
                 msg="Sorry, no data found!!!"
             data = {'user_id': session['id'], 'msg': msg, 'info': info}
@@ -306,8 +395,8 @@ def pesticide():
         try:
             cursor.execute('SELECT * FROM pesticide WHERE User_id = %s ', (session['id'],))
             info = cursor.fetchall()
-            for d in info:
-                _ = d.popitem()
+            # for d in info:
+            #     _ = d.popitem()
             if len(info)==0:
                 msg="Sorry, no data found!!!"
             data = {'user_id': session['id'], 'msg': msg, 'info': info}
@@ -329,8 +418,8 @@ def fertilizer():
         try:
             cursor.execute('SELECT * FROM fertilizer WHERE User_id = %s ', (session['id'],))
             info = cursor.fetchall()
-            for d in info:
-                _ = d.popitem()
+            # for d in info:
+            #     _ = d.popitem()
             if len(info)==0:
                 msg="Sorry, no data found!!!"
             data = {'user_id': session['id'], 'msg': msg, 'info': info}
@@ -348,20 +437,20 @@ def labour():
     if connection is None:
         msg = 'Database connection failed'
         return render_template('index.html', msg=msg)
-    with connection.cursor() as cursor:
-        try:
+    try:
+        with connection.cursor() as cursor:
             cursor.execute('SELECT * FROM labour WHERE User_id = %s ', (session['id'],))
             info = cursor.fetchall()
-            for d in info:
-                _ = d.popitem()
+            
             if len(info)==0:
                 msg="Sorry, no data found!!!"
             data = {'user_id': session['id'], 'msg': msg, 'info': info}
-            return render_template('labour.html', **data)
+            print(data)
+            return render_template('labour.html', info=info, msg=msg)
 
-        except Exception as e:
-            print(f"Labour Error: {e}")   
-            msg = 'An error occurred during labour'
+    except Exception as e:
+        print(f"Labour Error: {e}")   
+        msg = 'An error occurred during labour'
 
 # 8 - warehouse route - to display all warehouses data where crops are stored
 @app.route('/warehouse')
@@ -375,12 +464,10 @@ def warehouse():
         try:
             cursor.execute('SELECT * FROM warehouse WHERE User_id = %s ', (session['id'],))
             info = cursor.fetchall()
-            for d in info:
-                _ = d.popitem()
             if len(info)==0:
                 msg="Sorry, no data found!!!"
             data = {'user_id': session['id'], 'msg': msg, 'info': info}
-            return render_template('warehouse.html', **data)
+            return render_template('warehouse.html', info=info, msg=msg)
 
         except Exception as e:
             print(f"warehouse Error: {e}")   
@@ -398,12 +485,10 @@ def crop_market():
         try:
             cursor.execute('SELECT * FROM crop_market WHERE User_id = %s ', (session['id'],))
             info = cursor.fetchall()
-            for d in info:
-                _ = d.popitem()
             if len(info)==0:
                 msg="Sorry, no data found!!!"
             data = {'user_id': session['id'], 'msg': msg, 'info': info}
-            return render_template('crop_market.html', **data)
+            return render_template('crop_market.html', info=info, msg=msg)
 
         except Exception as e:
             print(f"crop_market Error: {e}")   
@@ -455,9 +540,10 @@ def update():
         print("Request Form:", request.form)
         column_id = request.form[name]
         column, table = name.split('+')
-        print("column_id", column_id)
+        # print("column_id", column_id)
 
         # Construct the SQL query using parameterized queries to avoid SQL injection
+        # print("table", column)
         sql = f"SELECT * FROM {table} WHERE {column} = %s"
         connection = get_db_connection()
         
@@ -470,23 +556,21 @@ def update():
                 # Using parameterized query to pass the column_id safely
                 cursor.execute(sql, (column_id,))
                 result = cursor.fetchone()
-
                 if result is None:
                     msg = 'No data found for the given id'
                     return render_template('login.html', msg=msg)
 
-                # Remove the User_id from the data, if present
-                temp = list(result.items())[1:-1]  # Removing the first and last elements (User_id and other unnecessary fields)
-                info = dict(temp)
-
-                # Prepare the data to send to the template
+                #remove User_id from result
+                result = dict(result)
+                del result['User_id']
                 data = {
-                    'info': info,
+                    'info': result,
                     'user_id': session.get('id'),
                     'table': table,
                     'id': column_id,
                     'column': column
                 }
+                print(data.values())
                 connection.commit()
                 return render_template('update.html', **data)
 
@@ -644,84 +728,8 @@ def calculate_total(d):
 # profit_loss_overall route - to caluculate overall profit-loss
 @app.route('/profit_loss_overall', methods=['GET', 'post'])
 def profit_loss_overall():
-    msg=''
-
-    # getting selling prices of every crop and all expences and calculating its sum
-    sql1 = "SELECT selling_price FROM crop_market WHERE User_id = '" + session['id'] + "' "
-    connection = get_db_connection()
-    if connection is None:
-        msg = 'Database connection failed'
-        return render_template('login.html', msg=msg)
-    with connection.cursor() as cursor:
-        try:
-            cursor.execute(sql1)
-            total_sp = cursor.fetchall()
-            total_sp = calculate_total(total_sp)
-
-        except Exception as e:
-            print(f"Profit Loss Error: {e}")
-
-    
-    q1 = "SELECT seed_price FROM seed WHERE User_id = '" + session['id'] + "' "  
-    connection = get_db_connection()
-    if connection is None:
-        msg = 'Database connection failed'
-        return render_template('login.html', msg=msg)
-    with connection.cursor() as cursor:
-        try:
-            cursor.execute(q1)
-            exp1 = cursor.fetchall()
-            exp1 = calculate_total(exp1)
-        except Exception as e:
-            print(f"Profit Loss Error: {e}")
-    
-    q2 = "SELECT pesticide_price FROM pesticide WHERE User_id = '" + session['id'] + "' "
-    connection = get_db_connection()
-    if connection is None:
-        msg = 'Database connection failed'
-        return render_template('login.html', msg=msg)
-    with connection.cursor() as cursor:
-        try:
-            cursor.execute(q2)
-            exp2 = cursor.fetchall()
-            exp2 = calculate_total(exp2)
-        except Exception as e:
-            print(f"Profit Loss Error: {e}")
-
-    q3 = "SELECT fertilizer_price FROM fertilizer WHERE User_id = '" + session['id'] + "' "
-    connection = get_db_connection()
-    if connection is None:
-        msg = 'Database connection failed'
-        return render_template('login.html', msg=msg)
-    with connection.cursor() as cursor:
-        try:
-            cursor.execute(q3)
-            exp3 = cursor.fetchall()
-            exp3 = calculate_total(exp3)
-        except Exception as e:
-            print(f"Profit Loss Error: {e}")
-
-    q4 = "SELECT salary FROM labour WHERE User_id = '" + session['id'] + "' "
-    connection = get_db_connection()
-    if connection is None:
-        msg = 'Database connection failed'
-        return render_template('login.html', msg=msg)
-    with connection.cursor() as cursor:
-        try:
-            cursor.execute(q4)
-            exp4 = cursor.fetchall()
-            exp4 = calculate_total(exp4)
-        except Exception as e:
-            print(f"Profit Loss Error: {e}")
-
-    total_exp = exp1 + exp2 + exp3 + exp4
-    values = [exp1, exp2, exp3, exp4]
-    data = {'user_id': session['id'], 'msg': msg, 'values': values, 'total_exp': total_exp, 'sp': total_sp, 'color': 'primary'}
-
-    if (total_sp - total_exp) > 0:
-        data['color'] = 'success'
-    elif (total_sp - total_exp) < 0:
-        data['color'] = 'danger'
+    data = getProfitLoss()
+    print(data)
 
     return render_template('profit.html', **data)
 
@@ -736,9 +744,16 @@ def profit_loss_cropwise():
     msg = ''
     if request.method == 'POST':
         crop_name = request.form['crop_name']
+        print(crop_name)
+        sp=0
+        exp1=0
+        exp2=0
+        exp3=0
+        exp4=0
 
         # getting selling prices of every crop and all expences and calculating its sum
-        sql1 = "SELECT selling_price FROM crop_market WHERE User_id = '" + session['id'] + "' " + " AND crop_name = '" + crop_name + "' "
+        sql1 = "SELECT Selling_price FROM crop_market WHERE User_id = '" + str(session['id']) + "' " + "AND crop_name = '" + crop_name+ "'"
+        
         connection = get_db_connection()
         if connection is None:
             msg = 'Database connection failed'
@@ -750,9 +765,9 @@ def profit_loss_cropwise():
                 sp = calculate_total(sp)
 
             except Exception as e:
-                print(f"Profit Loss Error: {e}")
+                print(f"Profit Loss Error in crop_market: {e}")
 
-        q1 = "SELECT seed_price FROM seed WHERE User_id = '" + session['id'] + "' " + " AND crop_name = '" + crop_name + "' " 
+        q1 = "SELECT seed_price FROM seed WHERE User_id = '" + str(session['id']) + "' " + " AND crop_name = '" + crop_name + "'"
         connection = get_db_connection()
         if connection is None:
             msg = 'Database connection failed'
@@ -764,10 +779,10 @@ def profit_loss_cropwise():
                 exp1 = calculate_total(exp1)
             
             except Exception as e:
-                print(f"Profit Loss Error: {e}")
+                print(f"Profit Loss Error in seed: {e}")
         
         
-        q2 = "SELECT pesticide_price FROM pesticide WHERE User_id = '" + session['id'] + "' " + " AND crop_name = '" + crop_name + "' "
+        q2 = "SELECT pesticide_price FROM pesticide WHERE User_id = '" + str(session['id']) + "' " + " AND crop_name = '" + crop_name + "'"
         connection = get_db_connection()
         if connection is None:
             msg = 'Database connection failed'
@@ -778,10 +793,10 @@ def profit_loss_cropwise():
                 exp2 = cursor.fetchall()
                 exp2 = calculate_total(exp2)
             except Exception as e:
-                print(f"Profit Loss Error: {e}")
+                print(f"Profit Loss Error in pesticide: {e}")
         
 
-        q3 = "SELECT fertilizer_price FROM fertilizer WHERE User_id = '" + session['id'] + "' " + " AND crop_name = '" + crop_name + "' "
+        q3 = "SELECT fertilizer_price FROM fertilizer WHERE User_id = '" + str(session['id']) + "' " + " AND crop_name = '" + crop_name + "'"
         connection = get_db_connection()
         if connection is None:
             msg = 'Database connection failed'
@@ -792,10 +807,24 @@ def profit_loss_cropwise():
                 exp3 = cursor.fetchall()
                 exp3 = calculate_total(exp3)
             except Exception as e:
+                print(f"Profit Loss Error in fertilizer: {e}")
+
+        q4 = "SELECT salary FROM labour WHERE User_id = '" + str(session['id']) + "' "  + " AND crop_name = '" + crop_name + "'"
+        connection = get_db_connection()
+        if connection is None:
+            msg = 'Database connection failed'
+            return render_template('login.html', msg=msg)
+        with connection.cursor() as cursor:
+            try:
+                cursor.execute(q4)
+                exp4 = cursor.fetchall()
+                exp4 = calculate_total(exp4)
+            except Exception as e:
                 print(f"Profit Loss Error: {e}")
+                
         
-        total_exp = exp1 + exp2 + exp3
-        values = [exp1, exp2, exp3]
+        total_exp = exp1 + exp2 + exp3 + exp4
+        values = [exp1, exp2, exp3, exp4]
         data = {'user_id': session['id'], 'msg': msg, 'values': values, 'total_exp': total_exp, 'sp': sp, 'color': 'primary'}
 
         if (sp - total_exp) > 0:

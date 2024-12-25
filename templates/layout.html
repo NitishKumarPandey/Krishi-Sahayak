@@ -20,8 +20,46 @@
 		
 				{% endblock %}
 		</table>
+	<style>
+		.active-link {
+			background-color: #e0f7e9; /* Light green background */
+			font-weight: bold;
+			border-radius: 5px; /* Optional for rounded corners */
+			color: #266040 !important; /* Ensure the text color is readable */
+		}
+		#weather-forecast {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-evenly;
+    }
 
-		<h4 class="text-center" id="error">{{ msg }}</h4>
+    .forecast-day {
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .forecast-day h6 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .forecast-day img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .forecast-day p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+    }
+	</style>
+
+		<!-- <h4 class="text-center" id="error">{{ msg }}</h4> -->
 	</body>
 	{% block footer %}
 

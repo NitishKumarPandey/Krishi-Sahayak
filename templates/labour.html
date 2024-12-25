@@ -1,41 +1,60 @@
 {% extends "layout.html" %}
 
 {% block body %}
-                <thead class="thead-light">
-                    <tr>
-                        <th>Labour Id</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Address</th>
-                        <th>Contact No</th>
-                        <th>Work</th>
-                        <th>Working Hours</th>
-                        <th>Salary</th>
-                        <th colspan="2">Actions</th>
-                        <form action="{{ url_for('add') }}" method="post">
-                            <th>
-                                <button type="submit" class="addbtn btn-sm" name="labour_id" value="labour">Add</button>
-                            </th>
-                        </form>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in info %}
-                    <tr>
-                        {% for value in record.values() %}
-                        <td>{{ value }}</td>
-                        {% endfor %}
+<div class="container mt-5 d-flex justify-content-center align-items-center">
+    {% if msg %}
+        <!-- Layout for No Data -->
+        <div class="text-center p-5" style="width: 600px;">
+            <img src="{{ url_for('static', filename='Frame 2147223727.png') }}" 
+                 alt="No Data" style="width: 100%; height: auto;" class="mb-3">
+            <h4>You haven't stored any labour data yet.</h4>
+            <p>{{ msg }}</p>
+            <form action="{{ url_for('add') }}" method="post">
+                <button type="submit" class="btn btn-success" name="labour_id" value="labour">+ Create</button>
+            </form>
+        </div>
+    {% else %}
+        <!-- Layout for Data Table -->
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
+                <tr>
+                    <th style="background-color: #e3dcc9;">Labour Id</th>
+                    <th style="background-color: #e3dcc9;">Full Name</th>
+                    <th style="background-color: #e3dcc9;">Crop Name</th>
+                    <th style="background-color: #e3dcc9;">Role</th>
+                    <th style="background-color: #e3dcc9;">Salary</th>
+                    <th style="background-color: #e3dcc9;" >Actions</th>
+                    <!-- <form action="{{ url_for('add') }}" method="post">
+                        <th>
+                            <button type="submit" class="addbtn btn-sm" name="labour_id" value="labour">Add</button>
+                        </th>
+                    </form> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in info %}
+                <tr style="background-color: white;">
+                    <td>{{record.id}}</td>
+                    <td>{{record.Name}}</td>
+                    <td>{{record.Crop_name}}</td>
+                    <td>{{record.Role}}</td>
+                    <td>{{record.Salary}}</td>
+                    <td class = "d-flex " style="gap: 4px;">
                         <form action="{{ url_for('update') }}" method="post">
-                            <td>
-                                <button type="submit" class="udtbtn btn-sm" value = '{{ record.labour_id }}' name="labour_id+labour" >Update</button>
-                            </td>
+                                <button type="submit" class="udtbtn btn-sm" value = '{{ record.id }}' name="id+labour" >Update</button>
                         </form>
                         <form action="{{ url_for('delete') }}" method="post">
-                            <td>
-                                <button type="submit" class="dltbtn btn-sm" value = '{{ record.labour_id }}' name="labour_id+labour" >Delete</button>
-                            </td>
+                                <button type="submit" class="dltbtn btn-sm" value = '{{ record.id }}' name="id+labour" >Delete</button>
                         </form>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-{% endblock %} 
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form action="{{ url_for('add') }}" method="post" class="d-flex justify-content-center align-items-center" style="margin-top: 10px;
+        ;">
+                            <button type="submit" class="btn" style="background-color: #266040" name="labour_id" value="labour">+ Add</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
