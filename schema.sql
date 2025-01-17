@@ -1,6 +1,13 @@
+/*
+    to create database
+*/
 CREATE DATABASE IF NOT EXISTS farm1_db;
 USE farm1_db;
 
+
+/*
+    to create table
+*/
 CREATE TABLE IF NOT EXISTS farmer (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -20,7 +27,7 @@ CREATE TABLE IF NOT EXISTS farm (
     User_id INT,
     Farm_name VARCHAR(255),
     Location VARCHAR(255),
-    Area FLOAT,
+    Acre FLOAT,
     FOREIGN KEY (User_id) REFERENCES farmer(id)
 );
 
@@ -68,7 +75,6 @@ CREATE TABLE IF NOT EXISTS labour (
     id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT,
     Name VARCHAR(255),
-    Role VARCHAR(255),
     Salary FLOAT,
     Crop_name VARCHAR(255),
     FOREIGN KEY (User_id) REFERENCES farmer(id)

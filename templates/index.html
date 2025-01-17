@@ -177,17 +177,19 @@
         <div class="col-12 col-lg-4">
             <div class="card profit-card p-3 mb-3">
                 <div class="mb-3">
-                    <h5 class="heading">Current Total Profit</h5>
-                    <h6 class="">बर्तमान कुल लाव</h6>
+                    <h5 class="heading">Current Total Profit/Loss</h5>
+                    <h6 class="">वर्तमान कुल लाभ/नुकसान</h6>
                 </div>
                 <p class="amount">
                     ₹{{ info.profit | default(0) }}
                 </p>
+                
+                
             </div>
             <div class="card expense-card p-3">
                 <div class="mb-3">
                     <h5 class="heading">Current Total Expenditure</h5>
-                    <h6 class="">बर्तमान कुल खर्च</h6>
+                    <h6 class="">वर्तमान कुल खर्च</h6>
                 </div>
                 <p class="amount amount-red">
                     ₹{{ info.expenditure | default(0) }}
@@ -205,7 +207,7 @@
                     <div class="col-6">
                         <iframe
                         class="recommended-video"
-                        src="https://www.youtube.com/embed/z7Uv_A4bG-U" 
+                        src="https://www.youtube.com/embed/BJG07p5UOrQ" 
                         title="YouTube video player" 
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -214,7 +216,7 @@
                     <div class="col-6">
                         <iframe
                         class="recommended-video"
-                        src="https://www.youtube.com/embed/z7Uv_A4bG-U" 
+                        src="https://www.youtube.com/embed/TM4PQTXF7Fw" 
                         title="YouTube video player" 
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -229,7 +231,9 @@
             <div class="card content-container">
                 <h5 class="heading">Recent Updates on Farming</h5>
                 <p>कृषि से संबंधित नवीनतम समाचार</p>
-                <div class="recent-updates"></div>
+                <div class="recent-updates">
+                    Coming soon
+                </div>
             </div>
         </div>
     </div>

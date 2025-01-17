@@ -18,11 +18,10 @@
         <table class="table table-bordered table-striped">
             <thead class="thead-light">
                 <tr>
-                    <th style="background-color: #e3dcc9;">Labour Id</th>
+                    <th style="background-color: #e3dcc9;">Labour No.</th>
                     <th style="background-color: #e3dcc9;">Full Name</th>
                     <th style="background-color: #e3dcc9;">Crop Name</th>
-                    <th style="background-color: #e3dcc9;">Role</th>
-                    <th style="background-color: #e3dcc9;">Salary</th>
+                    <th style="background-color: #e3dcc9;">Salary(in ₹)</th>
                     <th style="background-color: #e3dcc9;" >Actions</th>
                     <!-- <form action="{{ url_for('add') }}" method="post">
                         <th>
@@ -37,7 +36,6 @@
                     <td>{{record.id}}</td>
                     <td>{{record.Name}}</td>
                     <td>{{record.Crop_name}}</td>
-                    <td>{{record.Role}}</td>
                     <td>{{record.Salary}}</td>
                     <td class = "d-flex " style="gap: 4px;">
                         <form action="{{ url_for('update') }}" method="post">

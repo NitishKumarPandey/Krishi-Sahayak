@@ -284,9 +284,11 @@ def getProfitLoss():
     data = {'user_id': session['id'], 'msg': msg, 'values': values, 'total_exp': total_exp, 'sp': total_sp, 'color': 'primary'}
 
     if (total_sp - total_exp) > 0:
-        data['color'] = 'success'
+        data['color'] = '#2e7d32'
     elif (total_sp - total_exp) < 0:
-        data['color'] = 'danger'
+        data['color'] = '#d32f2f'
+    
+    print(data)
         
     return data
 
@@ -299,9 +301,10 @@ def home():
     sell = {
                 'profit': datas['sp'] - datas['total_exp'],
                 'expenditure': datas['total_exp'],
+                'color' : datas['color']
             }
     data = {'info': sell}
-    # print(data)
+    print(data)
 
     return render_template('index.html', **data)
         
@@ -473,7 +476,7 @@ def warehouse():
             print(f"warehouse Error: {e}")   
             msg = 'An error occurred during warehouse'
 
-# 9 - crop_market route - to display all markets data where crops are sold
+# 9 - add route - to display all markets data where crops are sold
 @app.route('/crop_market')
 def crop_market():
     msg=""
@@ -562,6 +565,9 @@ def update():
 
                 #remove User_id from result
                 result = dict(result)
+                #remove id column
+                del result['id']
+                print(result)
                 del result['User_id']
                 data = {
                     'info': result,
@@ -570,7 +576,7 @@ def update():
                     'id': column_id,
                     'column': column
                 }
-                print(data.values())
+                # print(data.values())
                 connection.commit()
                 return render_template('update.html', **data)
 
@@ -649,13 +655,15 @@ def add():
                 cursor.execute(sql)
                 all_columns = cursor.fetchall()  # No need to cast it to list
                 data_columns = []
-                print(all_columns)
+                # print(all_columns)
                 # removing unwanted columns
                 for column in all_columns:
                     if column["column_name"] not in [id_column, 'User_id']:
                         data_columns.append(column["column_name"])
-
+                #remove id column
+                data_columns.remove('id')
                 data = {"columns": data_columns, "table": table, "user_id": session.get('id')}
+                print(data)
                 return render_template('add.html', **data)
 
             except Exception as e:

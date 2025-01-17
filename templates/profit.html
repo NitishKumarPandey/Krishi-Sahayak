@@ -4,8 +4,8 @@
     <div class="card p-3 mb-3" style="background-color: #e0f2f1; min-width: 368px; height: 156px;">
         <div class="mb-3">
             <h5 class="" style="font-weight: bold;
-         color: #2e7d32;">Current Total Profit</h5>
-            <h6 class="">बर्तमान कुल लाव</h6>
+         color: #2e7d32;">Current Total Profit/Loss</h5>
+            <h6 class="">वर्तमान कुल लाभ/नुकसान</h6>
         </div>
         <p style="font-size: xx-large; font-weight: bold; color: #2e7d32;" class="">
             ₹{{ sp - total_exp | default(0) }}
@@ -15,7 +15,7 @@
         <div class="mb-3">
             <h5 class="" style="font-weight: bold;
          color: #2e7d32;">Current Total Expenditure</h5>
-            <h6 class="">बर्तमान कुल खर्च</h6>
+            <h6 class="">वर्तमान कुल खर्च</h6>
         </div>
         <p class="" style="font-size: xx-large; font-weight: bold; color: #d32f2f;">
             ₹{{ total_exp | default(0) }}
@@ -25,8 +25,8 @@
   
 <thead class="thead-light">
   <tr>
-    <th  style="background-color: #e3dcc9;" rowspan="2">Selling Price</th>
-    <th  style="background-color: #e3dcc9;" colspan="4">Expenditure</th>
+    <th  style="background-color: #e3dcc9;" rowspan="2">Selling Price(in ₹)</th>
+    <th  style="background-color: #e3dcc9;" colspan="4">Expenditure(in ₹)</th>
   </tr>
   <tr>
     <th  style="background-color: #e3dcc9;">Seed</th>
