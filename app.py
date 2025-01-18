@@ -836,8 +836,8 @@ def profit_loss_cropwise():
         data = {'user_id': session['id'], 'msg': msg, 'values': values, 'total_exp': total_exp, 'sp': sp, 'color': 'primary'}
 
         if (sp - total_exp) > 0:
-            data['color'] = 'success'
+            data['color'] = '#2e7d32'
         elif (sp - total_exp) < 0:
-            data['color'] = 'danger'
+            data['color'] = '#d32f2f'
         return render_template('profit.html', **data)
     return render_template('login.html', msg = msg)

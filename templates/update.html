@@ -15,11 +15,33 @@
 						<div class="card-body">
 							<h5 class="card-title text-center">Update in {{table}}</h5>
 							<form action="{{ url_for('update_confirm') }}" method="post">
-								{% for key, value in info.items() %}
+								{% for col, value in info.items() %}
 									<div div class="row">
 										<div div class="col">
-                                            	<p>{{key}}</p>
-                                            <input required type="text" class="form-control" name="{{ key }}" value="{{ value }}" placeholder="{{ value }}" >
+											{%if col == 'price'%}
+											<p>{{col}} (in ₹)</p>
+											{%elif col == 'Acre'%}
+												<p>Area (in Acres)</p>
+											{%elif col == 'Area_allocated'%}
+												<p>{{col}} (in Acres)</p>
+											{%elif col == 'Quantity'%}
+												<p>{{col}} (in Kg)</p>
+											{%elif col == 'Seed_price'%}
+												<p>{{col}} (in ₹)</p>
+											{%elif col == 'Pesticide_price'%}
+												<p>{{col}} (in ₹)</p>
+											{%elif col == 'Fertilizer_price'%}
+												<p>{{col}} (in ₹)</p>
+											{%elif col == 'Salary'%}
+												<p>{{col}} (in ₹)</p>
+											{%elif col == 'Capacity'%}
+												<p>{{col}} (in sq ft)</p>
+											{%elif col == 'Selling_price'%}
+												<p>{{col}} (in ₹)</p>
+											{%else%}
+												<p>{{col}}</p>
+											{%endif%}
+                                            <input required type="text" class="form-control" name="{{ col }}" value="{{ value }}" placeholder="{{ value }}" >
 										</div>
 									</div><br>
 								{% endfor %}

@@ -33,7 +33,6 @@
      .amount {
          font-size: 1.5rem;
          font-weight: bold;
-         color: #2e7d32;
      }
      .amount-red {
          color: #d32f2f;
@@ -180,7 +179,7 @@
                     <h5 class="heading">Current Total Profit/Loss</h5>
                     <h6 class="">वर्तमान कुल लाभ/नुकसान</h6>
                 </div>
-                <p class="amount">
+                <p class="amount" style="color: {{info.color}};">
                     ₹{{ info.profit | default(0) }}
                 </p>
                 
