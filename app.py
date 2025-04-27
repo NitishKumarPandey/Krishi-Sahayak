@@ -1,32 +1,122 @@
-# # from flask import Flask, render_template, request, redirect, url_for, session
-# from flask_mysqldb import MySQL
-# import pymysql
-
-# app = Flask(__name__)
-
-# # MySQL database configuration
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = ''
-# app.config['MYSQL_DB'] = 'farm1_db'
-# app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
-
-# # Explicitly install pymysql as MySQLdb
-# pymysql.install_as_MySQLdb()
-
-# # Initialize MySQL connection
-# mysql = MySQL(app)
-
-  
-# routes  
-# login route
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import pymysql
+from werkzeug.utils import secure_filename
+import os
+from dotenv import load_dotenv
+import requests
+from gtts import gTTS
+import string
+import random
+import base64
+
+load_dotenv()
+groq_api_key = os.getenv('groq_api_key')
+
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['ALLOWED_EXTENSIONS'] = {'webm', 'wav', 'mp3'}
+
+# Ensure upload directory exists
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs('static/audio', exist_ok=True)
 
 # Set the secret key for session management
 app.secret_key = 'your secret key'
+
+
+def get_answer_groq(question):
+    # Groq API endpoint for chat completions
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    
+    headers = {
+        "Authorization": f"Bearer {groq_api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    data = {
+        "model": "llama3-8b-8192",  # Use appropriate Groq model
+        "messages": [
+            {"role": "system", "content": "I want you to act like a helpful agriculture chatbot and help farmers with their query"},
+            {"role": "user", "content": "Give a Brief Of Agriculture Seasons in India"},
+            {"role": "system", "content": "In India, the agricultural season consists of three major seasons: the Kharif (monsoon), the Rabi (winter), and the Zaid (summer) seasons. Each season has its own specific crops and farming practices.\n\n1. Kharif Season (Monsoon Season):\nThe Kharif season typically starts in June and lasts until September. This season is characterized by the onset of the monsoon rains, which are crucial for agricultural activities in several parts of the country. Major crops grown during this season include rice, maize, jowar (sorghum), bajra (pearl millet), cotton, groundnut, turmeric, and sugarcane. These crops thrive in the rainy conditions and are often referred to as rain-fed crops.\n\n2. Rabi Season (Winter Season):\nThe Rabi season usually spans from October to March. This season is characterized by cooler temperatures and lesser or no rainfall. Crops grown during the Rabi season are generally sown in October and harvested in March-April. The major Rabi crops include wheat, barley, mustard, peas, gram (chickpeas), linseed, and coriander. These crops rely mostly on irrigation and are well-suited for the drier winter conditions.\n\n3. Zaid Season (Summer Season):\nThe Zaid season occurs between March and June and is a transitional period between Rabi and Kharif seasons. This season is marked by warmer temperatures and relatively less rainfall. The Zaid crops are grown during this time and include vegetables like cucumber, watermelon, muskmelon, bottle gourd, bitter gourd, and leafy greens such as spinach and amaranth. These crops are generally irrigated and have a shorter growing period compared to Kharif and Rabi crops.\n\nThese three agricultural seasons play a significant role in India's agricultural economy and provide stability to food production throughout the year. Farmers adapt their farming practices and crop selection accordingly to make the best use of the prevailing climatic conditions in each season."},
+            {"role": "user", "content": question}
+        ],
+        "temperature": 0.7,
+        "max_tokens": 1024
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        return response.json()['choices'][0]['message']['content']
+    else:
+        return f"Error: {response.status_code}, {response.text}"
+
+def speech_to_text_groq(audio_file_path):
+    # Convert audio to base64 for sending to Groq API
+    with open(audio_file_path, "rb") as audio_file:
+        audio_data = base64.b64encode(audio_file.read()).decode('utf-8')
+    
+    # Groq API endpoint for audio transcription
+    url = "https://api.groq.com/openai/v1/audio/transcriptions"
+    
+    headers = {
+        "Authorization": f"Bearer {groq_api_key}"
+    }
+    
+    # Prepare multipart form data
+    files = {
+        'file': (os.path.basename(audio_file_path), open(audio_file_path, 'rb'), 'audio/webm'),
+    }
+    
+    data = {
+        'model': 'whisper-large-v3'  # Use appropriate transcription model
+    }
+    
+    response = requests.post(url, headers=headers, files=files, data=data)
+    if response.status_code == 200:
+        return response.json().get('text', '')
+    else:
+        print(f"Error: {response.status_code}, {response.text}")
+        return "Sorry, there was an error transcribing your audio."
+
+def text_to_audio(text, filename):
+    tts = gTTS(text)
+    tts.save(f'static/audio/{filename}.mp3')
+
+@app.route('/chat')
+def chat():
+    return render_template('chat.html')
+
+@app.route('/chat-response', methods=['POST'])
+def chat_response():
+    if 'audio' in request.files:
+        audio = request.files['audio']
+        if audio and allowed_file(audio.filename):
+            filename = secure_filename(audio.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            audio.save(filepath)
+            transcription = speech_to_text_groq(filepath)
+            return jsonify({'text': transcription})
+
+    text = request.form.get('text')
+    if text:
+        response = process_text(text)
+        return {'text': response['text'], 'voice': url_for('static', filename='audio/' + response['voice'])}
+
+    return jsonify({'text': 'Invalid request'})
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+def process_text(text):
+    # Process text input using Groq API
+    return_text = get_answer_groq(text)
+    # Generate random string for audio filename
+    res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    text_to_audio(return_text, res)
+    return {"text": return_text, "voice": f"{res}.mp3"}
+
 
 # Database connection function
 def get_db_connection():
