@@ -172,7 +172,7 @@ def login():
                     data = {'user_id': session['id'], 'msg': msg, 'info': info}
 
                     # displaying farmer basic info 
-                    return render_template('index.html', **data)
+                    return redirect(url_for('home'))
                 else:
                     # if username/password not matching with our database or not present in database then displaying error 
                     msg = 'Incorrect username / password!!!'
