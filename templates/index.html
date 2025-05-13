@@ -1,51 +1,171 @@
 {% extends "layout.html" %}
 
-{% block body %} 
- <!-- Bootstrap CSS -->
- <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
- <style>
-     .card {
-         border: none;
-         border-radius: 10px;
-         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-         margin-bottom: 20px;
-     }
-     .weather-card {
+{% block body %}
+<!-- Bootstrap CSS -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .weather-card {
         background-image: url('../static/gradient.png');
         background-size: cover;
         background-position: top;
         background-repeat: no-repeat;
         border-radius: 10px;
-     }
-     .profit-card {
-         background-color: #e0f2f1;
-     }
-     .expense-card {
-         background-color: #ffebee;
-     }
-     .content-container {
-         padding: 15px;
-     }
-     .heading {
-         font-weight: bold;
-         color: #2e7d32;
-     }
-     .amount {
-         font-size: 1.5rem;
-         font-weight: bold;
-     }
-     .amount-red {
-         color: #d32f2f;
-     }
-     .recommended-video,
-     .recent-updates {
-         width: 100%;
-         height: 200px;
-         border-radius: 10px;
-     }
- </style>
-<div class="container-fluid" style="padding: 10px 40px;" >
-    <div class="row gx-3 gy-3" >
+    }
+
+    .profit-card {
+        background-color: #e0f2f1;
+    }
+
+    .expense-card {
+        background-color: #ffebee;
+    }
+
+    .content-container {
+        padding: 15px;
+    }
+
+    .heading {
+        font-weight: bold;
+        color: #2e7d32;
+    }
+
+    .amount {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .amount-red {
+        color: #d32f2f;
+    }
+
+    .recommended-video,
+    .recent-updates {
+        width: 100%;
+        height: 200px;
+        border-radius: 10px;
+    }
+    /* Improved carousel styling */
+    #farmingNewsCarousel {
+        height: 350px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .carousel-item {
+        height: 350px;
+        position: relative;
+    }
+
+    .carousel-item img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        filter: brightness(0.85);
+    }
+
+    .carousel-caption {
+        position: absolute;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5) 80%, transparent);
+        padding: 20px 15px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: left;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    /* Make carousel captions visible on all screen sizes */
+    .carousel-caption.d-none.d-md-block {
+        display: block !important;
+    }
+
+    .carousel-caption h6 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    }
+
+    .carousel-caption p {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;   /* 👈 THIS is what you're missing */
+        -webkit-line-clamp: 2;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        line-height: 1.4;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        opacity: 0.95;
+    }
+
+    
+    .carousel-caption .btn-light {
+        background-color: #3c9f40;
+        color: black;
+        border: none;
+        padding: 5px 12px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-shadow: none;
+    }
+    
+    .carousel-caption .btn-light:hover {
+        background-color: #2e7d32;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 20%;
+        height: 20%;
+        opacity: 1;
+        background: transparent;
+        border: none;
+        align-self: self-end;
+    }
+    
+    /* .carousel-control-prev:hover,
+    .carousel-control-next:hover {
+        opacity: 0;
+    } */
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 12px;
+        border-radius: 50%;
+    }
+
+    /* Make forecast days display horizontally */
+    #weather-forecast {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .forecast-day {
+        min-width: 130px;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+</style>
+<div class="container-fluid" style="padding: 10px 40px;">
+    <div class="row gx-3 gy-3">
         <!-- Weather Forecast -->
         <div class="col-12 col-lg-8 weather-card" style="margin-bottom: 20px;">
             <div class="d-flex justify-content-between align-items-start" style="padding: 10px 10px 0 10px;">
@@ -53,16 +173,16 @@
                     <h5 class="heading">Upcoming 5-Days Weather Forecast</h5>
                     <p class="text-black">आगामी 5 दिनों का मौसम पूर्वानुमान</p>
                 </div>
-                <img src="../static/cultivating.png" alt="Weather Image" height="130" >
+                <img src="../static/cultivating.png" alt="Weather Image" height="130">
             </div>
-            
+
             <div id="weather-forecast" class="mt-3"></div>
             <button class="btn btn-success " id="getLocation" onclick="getLocation()">Get Location</button>
         </div>
-        
+
         <script>
             function getLocation() {
-            // Check if Geolocation API is supported
+                // Check if Geolocation API is supported
                 if (navigator.geolocation) {
                     //hide the location button
                     document.getElementById("getLocation").style.display = "none";
@@ -72,7 +192,7 @@
                             const latitude = position.coords.latitude;
                             const longitude = position.coords.longitude;
                             console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-                            weatherData(latitude,longitude);
+                            weatherData(latitude, longitude);
                         },
                         // Error callback
                         function (error) {
@@ -98,20 +218,20 @@
                     alert("Geolocation is not supported by this browser.");
                 }
             }
-            async function weatherData(lat,lon){ 
-                try{
-                    
+            async function weatherData(lat, lon) {
+                try {
+
                     const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=4d15407b3f27c5c4e0115f4b7cd3461c`, {
                         method: 'GET'
                     });
                     const data = await response.json();
                     renderWeatherForecast(data.list);
                 }
-                catch(error){
+                catch (error) {
                     console.log(error);
                 }
             }
-        
+
             // Function to fetch and render weather data
             function renderWeatherForecast(weatherData) {
                 try {
@@ -154,23 +274,23 @@
                     console.error('Error fetching weather data:', error);
                 }
             }
-        
+
             function checkLocationPermission() {
-                if(navigator.permissions && navigator.permissions.query) {
-                    navigator.permissions.query({ name: 'geolocation' }).then(result => {    
+                if (navigator.permissions && navigator.permissions.query) {
+                    navigator.permissions.query({ name: 'geolocation' }).then(result => {
                         if (result.state === 'granted') {
                             getLocation();
                         }
                     })
                 }
             }
-        
+
             document.addEventListener('DOMContentLoaded', () => {
-                checkLocationPermission();                
+                checkLocationPermission();
             });
-        
+
         </script>
-        
+
 
         <!-- Profit and Expenditure -->
         <div class="col-12 col-lg-4">
@@ -182,8 +302,8 @@
                 <p class="amount" style="color: {{info.color}}\">
                     ₹{{ info.profit | default(0) }}
                 </p>
-                
-                
+
+
             </div>
             <div class="card expense-card p-3">
                 <div class="mb-3">
@@ -195,7 +315,7 @@
                 </p>
             </div>
         </div>
-        
+
 
         <!-- Recommended Videos -->
         <div class="col-12 col-md-8">
@@ -204,46 +324,71 @@
                 <p>कृषि ज्ञान के लिए अनुशंसित वीडियो</p>
                 <div class="row gx-2">
                     <div class="col-6">
-                        <iframe
-                        class="recommended-video"
-                        src="https://www.youtube.com/embed/BJG07p5UOrQ" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen></iframe>
+                        <iframe class="recommended-video" src="https://www.youtube.com/embed/BJG07p5UOrQ"
+                            title="YouTube video player" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
                     </div>
                     <div class="col-6">
-                        <iframe
-                        class="recommended-video"
-                        src="https://www.youtube.com/embed/TM4PQTXF7Fw" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen></iframe>
+                        <iframe class="recommended-video" src="https://www.youtube.com/embed/TM4PQTXF7Fw"
+                            title="YouTube video player" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Recent Updates -->
-        <!-- <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4">
             <div class="card content-container">
-                <h5 class="heading">Recent Updates on Farming</h5>
-                <p>कृषि से संबंधित नवीनतम समाचार</p>
-                <div class="recent-updates">
-                    Coming soon
+                <h5 class="heading" style="color: #2e7d32; border-left: 4px solid #2e7d32; padding-left: 12px;">Recent Updates on Farming</h5>
+                <p class="px-3 py-2" style="color: #4a4a4a; font-weight: 500;">कृषि से संबंधित नवीनतम समाचार</p>
+
+                <div id="farmingNewsCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% if articles %}
+                        {% for article in articles %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <img src="{{ article.image }}" class="d-block w-100 h-30" alt="{{ article.title }}">
+                            <div class="carousel-caption">
+                                <h6 class="text-white">{{ article.title }}</h6>
+                                <p class="text-light">{{ article.description }}</p>
+                                <a href="{{ article.url }}" target="_blank" class="btn btn-sm btn-light d-block mx-auto text-white" style="width: 120px;">Read more</a>
+
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="carousel-item active">
+                            <img src="/api/placeholder/400/300" class="d-block w-100" alt="No News Available">
+                            <div class="carousel-caption">
+                                <h6 class="text-white">No articles available</h6>
+                                <p class="text-light">Please check back later for updates</p>
+                                <a href="#" class="btn btn-sm btn-light">Refresh</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#farmingNewsCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#farmingNewsCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
             </div>
-        </div> -->
+        </div>
+
     </div>
 </div>
 
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}
-
-
-
-
-

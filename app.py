@@ -125,7 +125,7 @@ def get_db_connection():
             host='localhost',
             user='root',
             password='',
-            port=3308,
+            port=3306,
             database='farm1_db',
             cursorclass=pymysql.cursors.DictCursor
         )
@@ -389,12 +389,21 @@ def getProfitLoss():
 @app.route('/home')
 def home():
     datas = getProfitLoss()
+    api_key = os.getenv("API_KEY")
     sell = {
                 'profit': datas['sp'] - datas['total_exp'],
                 'expenditure': datas['total_exp'],
-                'color' : datas['color']
+                'color' : datas['color'],
+                "api_key" : api_key
             }
     data = {'info': sell}
+    # print(data)
+    try:
+        article_data = requests.get("https://gnews.io/api/v4/search?q=agriculture&lang=en&country=in&max=10&apikey=" + api_key).json()
+        # print(article_data)
+        data['articles'] = article_data['articles']
+    except Exception as e:
+        print(f"Article Error: {e}")
     print(data)
 
     return render_template('index.html', **data)
