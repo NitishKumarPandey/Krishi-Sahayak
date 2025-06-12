@@ -125,7 +125,7 @@ def get_db_connection():
             host='localhost',
             user='root',
             password='',
-            port=3306,
+            port=3308,
             database='farm1_db',
             cursorclass=pymysql.cursors.DictCursor
         )
