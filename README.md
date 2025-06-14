@@ -6,6 +6,3 @@ This project is very usefull in real-life because it can use for store, process,
 * Frontend - HTML, CSS, Bootstrap4
 * Backend - Python(Flask)  
 * Database - MySQL
-
-### Project images
-#### Login page
